@@ -49,7 +49,7 @@ class TimeEntryCollection extends Collection
                 }
 
                 if ($firstDate->month === $lastDate->month) {
-                    return sprintf('%02d-%02d/%02d', $firstDate->day, $lastDate->day, $firstDate->month);
+                    return sprintf('%s-%s/%s', $firstDate->format('d'), $lastDate->format('d'), $firstDate->format('m'));
                 }
 
                 return $firstDate->format('d/m') . ' - ' . $lastDate->format('d/m');
