@@ -32,8 +32,8 @@ class GetTimeEntries extends Command
     {
         TimeEntry::query()->truncate();
         $request = (new DetailedReportRequest())
-            ->since($this->option('since'))
-            ->until($this->option('until'));
+            ->setSince($this->option('since'))
+            ->setUntil($this->option('until'));
 
         while (true) {
             $result = $client->getReport($request);
@@ -53,8 +53,8 @@ class GetTimeEntries extends Command
                         'description' => $entryData->description,
                         'projectName' => $entryData->project,
                         'clientName' => $entryData->client,
-                        'start' => $entryData->start,
-                        'end' => $entryData->end,
+                        'started_at' => $entryData->start,
+                        'ended_at' => $entryData->end,
                     ]
                 );
             }

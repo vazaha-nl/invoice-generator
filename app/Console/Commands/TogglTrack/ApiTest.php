@@ -1,18 +1,19 @@
 <?php
 
-namespace App\Console\Commands;
+namespace App\Console\Commands\TogglTrack;
 
 use App\Services\ToggleTrack\ApiClient;
+use App\Services\ToggleTrack\Requests\DetailedReportRequest;
 use Illuminate\Console\Command;
 
-class TogglApiTest extends Command
+class ApiTest extends Command
 {
     /**
      * The name and signature of the console command.
      *
      * @var string
      */
-    protected $signature = 'toggl:api_test';
+    protected $signature = 'toggl_track:api_test';
 
     /**
      * The console command description.
@@ -28,7 +29,7 @@ class TogglApiTest extends Command
      */
     public function handle(ApiClient $client)
     {
-        $response = $client->getDetailedReport();
+        $response = $client->getReport(new DetailedReportRequest());
         dump($response);
         return 0;
     }

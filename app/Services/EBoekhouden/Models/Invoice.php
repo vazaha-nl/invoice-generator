@@ -30,6 +30,7 @@ class Invoice extends Model
         $this->date = Carbon::today();
     }
 
+    // TODO refactor / move
     public function generateLines(Collection $timeEntries)
     {
         $this->lines = $timeEntries->groupBy('project')
@@ -60,7 +61,7 @@ class Invoice extends Model
                 'Betalingstermijn' => $this->paymentTerm,
                 'PerEmailVerzenden' => false,
                 'AutomatischeIncasso' => false,
-                'IncassoMachtigingDatumOndertekening' => '2022-01-01',
+                'IncassoMachtigingDatumOndertekening' => Carbon::today('Y-m-d'),
                 'IncassoMachtigingFirst' => false,
                 'InBoekhoudingPlaatsen' => false,
                 'Regels' => [

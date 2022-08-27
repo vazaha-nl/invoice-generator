@@ -11,14 +11,32 @@ abstract class ReportRequest extends Request
 
     protected Carbon|null $until;
 
-    public function since(string|DateTimeInterface $date): static
+    public function setSince(string|DateTimeInterface $date): static
     {
         $this->since = Carbon::parse($date);
 
         return $this;
     }
 
-    public function until(string|DateTimeInterface $date): static
+    protected function getSince(): string|null
+    {
+        if (!isset($this->since)) {
+            return null;
+        }
+
+        return $this->since->format('Y-m-d');
+    }
+
+    protected function getUntil(): string|null
+    {
+        if (!isset($this->until)) {
+            return null;
+        }
+
+        return $this->until->format('Y-m-d');
+    }
+
+    public function setUntil(string|DateTimeInterface $date): static
     {
         $this->until = Carbon::parse($date);
 
@@ -28,8 +46,8 @@ abstract class ReportRequest extends Request
     public function getQueryParams(): array
     {
         return array_merge([
-            'since' => $this->since->format('Y-m-d'),
-            'until' => $this->until->format('Y-m-d'),
+            'since' => $this->getSince(),
+            'until' => $this->getUntil(),
         ], parent::getQueryParams());
     }
 }

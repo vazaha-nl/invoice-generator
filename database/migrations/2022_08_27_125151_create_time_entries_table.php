@@ -19,8 +19,8 @@ return new class extends Migration
             $table->string('description');
             $table->string('projectName')->nullable();
             $table->string('clientName')->nullable()->index();
-            $table->timestamp('start');
-            $table->timestamp('end')->nullable();
+            $table->timestamp('started_at')->index();
+            $table->timestamp('ended_at')->index()->nullable();
             $table->timestamps();
         });
     }
