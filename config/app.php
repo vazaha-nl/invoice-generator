@@ -195,6 +195,9 @@ return [
         App\Providers\EventServiceProvider::class,
         App\Providers\RouteServiceProvider::class,
 
+        \App\Providers\EBoekhoudenServiceProvider::class,
+        \App\Providers\ToggleTrackServiceProvider::class,
+
     ],
 
     /*

@@ -1,9 +1,10 @@
 <?php
 
-namespace App\Console\Commands\Toggl;
+namespace App\Console\Commands\TogglTrack;
 
 use App\Models\TimeEntry;
 use App\Services\ToggleTrack\ApiClient;
+use App\Services\ToggleTrack\Requests\DetailedReportRequest;
 use Illuminate\Console\Command;
 
 class GetTimeEntries extends Command
@@ -13,7 +14,7 @@ class GetTimeEntries extends Command
      *
      * @var string
      */
-    protected $signature = 'toggl:get_time_entries';
+    protected $signature = 'toggl_track:get_time_entries {--since=} {--until=}';
 
     /**
      * The console command description.
@@ -29,22 +30,19 @@ class GetTimeEntries extends Command
      */
     public function handle(ApiClient $client)
     {
-        $page = 1;
-
         TimeEntry::query()->truncate();
+        $request = (new DetailedReportRequest())
+            ->since($this->option('since'))
+            ->until($this->option('until'));
 
         while (true) {
-            $result = $client->getDetailedReport([
-                'page' => $page,
-                'since' => '2022-07-01',
-                'until' => '2022-07-31',
-            ]);
+            $result = $client->getReport($request);
 
             if (empty($result->data)) {
                 break;
             }
 
-            $this->info(sprintf('Page %d, %d entries ...', $page, count($result->data)));
+            $this->info(sprintf('Page %d, %d entries ...', $request->getPage(), count($result->data)));
 
             foreach ($result->data as $entryData) {
                 TimeEntry::query()->updateOrCreate(
@@ -53,8 +51,8 @@ class GetTimeEntries extends Command
                     ],
                     [
                         'description' => $entryData->description,
-                        'project' => $entryData->project,
-                        'client' => $entryData->client,
+                        'projectName' => $entryData->project,
+                        'clientName' => $entryData->client,
                         'start' => $entryData->start,
                         'end' => $entryData->end,
                     ]
@@ -62,8 +60,7 @@ class GetTimeEntries extends Command
             }
 
             sleep(1);
-
-            $page++;
+            $request->nextPage();
         }
         return 0;
     }

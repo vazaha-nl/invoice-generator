@@ -17,8 +17,8 @@ return new class extends Migration
             $table->id();
             $table->unsignedBigInteger('external_id')->nullable()->index();
             $table->string('description');
-            $table->string('project')->nullable();
-            $table->string('client')->nullable();
+            $table->string('projectName')->nullable();
+            $table->string('clientName')->nullable()->index();
             $table->timestamp('start');
             $table->timestamp('end')->nullable();
             $table->timestamps();

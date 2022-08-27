@@ -3,26 +3,18 @@
 namespace App\Services\EBoekhouden;
 
 use App\Services\EBoekhouden\Models\Invoice;
-use SoapClient;
 
 class ApiClient
 {
-    protected SoapClient $soapClient;
-
-    protected string $username;
-
-    protected string $securityCode1;
-
-    protected string $securityCode2;
-
     protected string $sessionId;
 
-    public function __construct(array $options = [])
-    {
-        $this->username = config('eboekhouden.username');
-        $this->securityCode1 = config('eboekhouden.security_code1');
-        $this->securityCode2 = config('eboekhouden.security_code2');
-        $this->soapClient = new SoapClient('https://soap.e-boekhouden.nl/soap.asmx?wsdl', $options);
+    public function __construct(
+        protected SoapClient $soap,
+        protected string $username,
+        protected string $securityCode1,
+        protected string $securityCode2,
+    ) {
+        //
     }
 
     public function checkSession(): void

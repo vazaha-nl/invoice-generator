@@ -2,40 +2,36 @@
 
 namespace App\Services\ToggleTrack;
 
-use GuzzleHttp\Client;
+use App\Services\ToggleTrack\Requests\ReportRequest;
+use App\Services\ToggleTrack\Requests\Request;
 
 class ApiClient
 {
-    protected Client $httpClient;
-
-    public function __construct()
-    {
-        $this->httpClient = new Client([
-            'base_uri' => config('toggl.base_uri'),
-            'auth' => [
-                config('toggl.api_token'),
-                'api_token',
-            ]
-        ]);
+    public function __construct(
+        protected HttpClient $httpClient,
+        protected string $userAgent,
+        protected int $workspaceId,
+    ) {
+        //
     }
 
-    public function getDetailedReport(array $params = [])
+    public function getReport(ReportRequest $request)
     {
-        return $this->request('GET', '/reports/api/v2/details', $params);
+        return $this->request($request);
     }
 
-    protected function getBaseParams(): array
+    protected function getDefaultQueryParams(): array
     {
         return [
-            'user_agent' => config('toggl.user_agent'),
-            'workspace_id' => config('toggl.workspace_id'),
+            'user_agent' => config('toggl_track.user_agent'),
+            'workspace_id' => config('toggl_track.workspace_id'),
         ];
     }
 
-    public function request(string $method, string $endpoint, array $queryParams = [])
+    public function request(Request $request)
     {
-        $response = $this->httpClient->request($method, $endpoint, [
-            'query' => array_merge($this->getBaseParams(), $queryParams),
+        $response = $this->httpClient->request($request->getMethod(), $request->getEndpoint(), [
+            'query' => array_merge($this->getDefaultQueryParams(), $request->getQueryParams()),
         ]);
 
         return json_decode($response->getBody()->getContents());
