@@ -1,6 +1,6 @@
 <?php
 
-namespace App\ToggleTrack;
+namespace App\Services\ToggleTrack;
 
 use Carbon\Carbon;
 use DateInterval;

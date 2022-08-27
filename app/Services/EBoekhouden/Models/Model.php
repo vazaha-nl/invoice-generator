@@ -1,6 +1,6 @@
 <?php
 
-namespace App\EBoekhouden\Models;
+namespace App\Services\EBoekhouden\Models;
 
 use Carbon\Carbon;
 

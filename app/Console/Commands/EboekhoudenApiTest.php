@@ -2,8 +2,8 @@
 
 namespace App\Console\Commands;
 
-use App\EBoekhouden\ApiClient;
-use App\EBoekhouden\Models\Invoice;
+use App\Services\EBoekhouden\ApiClient;
+use App\Services\EBoekhouden\Models\Invoice;
 use App\Models\TimeEntry;
 use Illuminate\Console\Command;
 

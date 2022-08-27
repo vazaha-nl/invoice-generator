@@ -3,7 +3,7 @@
 namespace App\Console\Commands\Toggl;
 
 use App\Models\TimeEntry;
-use App\ToggleTrack\ApiClient;
+use App\Services\ToggleTrack\ApiClient;
 use Illuminate\Console\Command;
 
 class GetTimeEntries extends Command

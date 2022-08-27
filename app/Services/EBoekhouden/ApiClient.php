@@ -1,8 +1,8 @@
 <?php
 
-namespace App\EBoekhouden;
+namespace App\Services\EBoekhouden;
 
-use App\EBoekhouden\Models\Invoice;
+use App\Services\EBoekhouden\Models\Invoice;
 use SoapClient;
 
 class ApiClient

@@ -1,6 +1,6 @@
 <?php
 
-namespace App\EBoekhouden\Enums;
+namespace App\Services\EBoekhouden\Enums;
 
 enum VatCode: string
 {

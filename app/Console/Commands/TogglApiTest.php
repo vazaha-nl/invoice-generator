@@ -2,7 +2,7 @@
 
 namespace App\Console\Commands;
 
-use App\ToggleTrack\ApiClient;
+use App\Services\ToggleTrack\ApiClient;
 use Illuminate\Console\Command;
 
 class TogglApiTest extends Command

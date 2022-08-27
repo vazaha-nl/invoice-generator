@@ -1,9 +1,10 @@
 <?php
 
-namespace App\ToggleTrack;
+namespace App\Services\ToggleTrack;
 
 use Illuminate\Support\Collection;
 use Maatwebsite\Excel\Concerns\ToCollection;
+use App\Services\ToggleTrack\EntryCollection;
 
 class EntryImport implements ToCollection
 {

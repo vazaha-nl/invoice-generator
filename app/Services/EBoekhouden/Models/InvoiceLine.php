@@ -1,9 +1,9 @@
 <?php
 
-namespace App\EBoekhouden\Models;
+namespace App\Services\EBoekhouden\Models;
 
-use App\EBoekhouden\Enums\Unit;
-use App\EBoekhouden\Enums\VatCode;
+use App\Services\EBoekhouden\Enums\Unit;
+use App\Services\EBoekhouden\Enums\VatCode;
 
 class InvoiceLine extends Model
 {
