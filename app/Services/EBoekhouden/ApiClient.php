@@ -9,7 +9,7 @@ class ApiClient
     protected string $sessionId;
 
     public function __construct(
-        protected SoapClient $soap,
+        protected SoapClient $soapClient,
         protected string $username,
         protected string $securityCode1,
         protected string $securityCode2,

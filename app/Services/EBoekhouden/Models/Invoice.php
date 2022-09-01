@@ -3,8 +3,6 @@
 namespace App\Services\EBoekhouden\Models;
 
 use App\Collections\TimeEntryCollection;
-use App\Services\EBoekhouden\Enums\Unit;
-use App\Services\EBoekhouden\Enums\VatCode;
 use Carbon\Carbon;
 use Illuminate\Support\Collection;
 
@@ -12,7 +10,7 @@ class Invoice extends Model
 {
     // TODO autogenerate correctly
     // default auto generation of eboekhouden sucks
-    public string $number = '99999999999';
+    public string $number = '2022090014';
 
     public string $relationCode = 'RISK';
 
@@ -30,21 +28,12 @@ class Invoice extends Model
         $this->date = Carbon::today();
     }
 
-    // TODO refactor / move
     public function generateLines(Collection $timeEntries)
     {
-        $this->lines = $timeEntries->groupBy('project')
+        $this->lines = $timeEntries->groupBy('projectName')
             ->mapInto(TimeEntryCollection::class)
-            ->map(function (TimeEntryCollection $timeEntries, $project) {
-                $invoiceLine = new InvoiceLine();
-                $invoiceLine->amount = $timeEntries->getRoundedDurationInHours();
-                $invoiceLine->unit = Unit::Hour;
-                $invoiceLine->description = $timeEntries->getDescription();
-                $invoiceLine->pricePerUnit = 90.00; // TODO should be variable?
-                $invoiceLine->vatCode = VatCode::HIGH_SALE_21;
-                $invoiceLine->contraAccountCode = '8000'; // TODO make variable
-
-                return $invoiceLine;
+            ->map(function (TimeEntryCollection $timeEntries) {
+                return InvoiceLine::fromTimeEntryCollection($timeEntries);
             })
             ->sortBy('description')
             ->values();
@@ -61,7 +50,7 @@ class Invoice extends Model
                 'Betalingstermijn' => $this->paymentTerm,
                 'PerEmailVerzenden' => false,
                 'AutomatischeIncasso' => false,
-                'IncassoMachtigingDatumOndertekening' => Carbon::today('Y-m-d'),
+                'IncassoMachtigingDatumOndertekening' => $this->formatDate(Carbon::today()),
                 'IncassoMachtigingFirst' => false,
                 'InBoekhoudingPlaatsen' => false,
                 'Regels' => [

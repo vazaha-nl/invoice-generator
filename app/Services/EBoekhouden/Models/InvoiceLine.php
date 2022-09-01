@@ -2,6 +2,7 @@
 
 namespace App\Services\EBoekhouden\Models;
 
+use App\Collections\TimeEntryCollection;
 use App\Services\EBoekhouden\Enums\Unit;
 use App\Services\EBoekhouden\Enums\VatCode;
 
@@ -14,6 +15,19 @@ class InvoiceLine extends Model
     public float $pricePerUnit;
     public VatCode $vatCode;
     public string $contraAccountCode;
+
+    public static function fromTimeEntryCollection(TimeEntryCollection $timeEntries)
+    {
+        $invoiceLine = new static();
+        $invoiceLine->amount = $timeEntries->getRoundedDurationInHours();
+        $invoiceLine->unit = Unit::HOUR;
+        $invoiceLine->description = $timeEntries->getDescription();
+        $invoiceLine->pricePerUnit = 90.00; // TODO should be variable? from db?
+        $invoiceLine->vatCode = VatCode::HIGH_SALE_21;
+        $invoiceLine->contraAccountCode = '8000'; // TODO make variable
+
+        return $invoiceLine;
+    }
 
     public function toArray(): object
     {

@@ -10,7 +10,7 @@ class TimeEntryCollection extends Collection
 {
     public function getUniqueDates(): Collection
     {
-        return $this->groupBy(fn (TimeEntry $timeEntry) => $timeEntry->start->format('Y-m-d'))
+        return $this->groupBy(fn (TimeEntry $timeEntry) => $timeEntry->started_at->format('Y-m-d'))
             ->keys()
             ->unique()
             ->sort()

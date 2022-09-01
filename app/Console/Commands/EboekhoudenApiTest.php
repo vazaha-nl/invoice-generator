@@ -34,7 +34,7 @@ class EboekhoudenApiTest extends Command
         // $client->closeSession();
 
         $invoice = new Invoice();
-        $invoice->generateLines(TimeEntry::all());
+        $invoice->generateLines(TimeEntry::query()->where('clientName', 'risk.nl')->get());
         dump($invoice->toArray());
         $result = $client->addInvoice($invoice);
         dump($result);

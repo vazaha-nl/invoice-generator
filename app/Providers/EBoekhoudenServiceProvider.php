@@ -18,7 +18,7 @@ class EBoekhoudenServiceProvider extends ServiceProvider
     {
         $this->app->singleton(SoapClient::class, function () {
             return new SoapClient([
-                'trace' => config('eboekhouden.debug'),
+                'trace' => config('e_boekhouden.debug'),
             ]);
         });
 
