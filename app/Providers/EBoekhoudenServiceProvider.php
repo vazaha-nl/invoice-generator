@@ -3,6 +3,7 @@
 namespace App\Providers;
 
 use App\Services\EBoekhouden\ApiClient;
+use App\Services\EBoekhouden\ErrorHandler;
 use App\Services\EBoekhouden\SoapClient;
 use Illuminate\Contracts\Foundation\Application;
 use Illuminate\Support\ServiceProvider;
@@ -28,6 +29,7 @@ class EBoekhoudenServiceProvider extends ServiceProvider
                 config('e_boekhouden.username'),
                 config('e_boekhouden.security_code1'),
                 config('e_boekhouden.security_code2'),
+                $app->make(ErrorHandler::class),
             );
         });
     }
