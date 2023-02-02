@@ -8,11 +8,9 @@ use Illuminate\Support\Collection;
 
 class Invoice extends Model
 {
-    // TODO autogenerate correctly
-    // default auto generation of eboekhouden sucks
-    public string $number = '2022090014';
+    public string $number;
 
-    public string $relationCode = 'RISK';
+    public string $relationCode;
 
     public Carbon $date;
 
@@ -26,6 +24,20 @@ class Invoice extends Model
     public function __construct()
     {
         $this->date = Carbon::today();
+    }
+
+    public function setNumber(string $number): self
+    {
+        $this->number = $number;
+
+        return $this;
+    }
+
+    public function setRelationCode(string $relationCode): self
+    {
+        $this->relationCode = $relationCode;
+
+        return $this;
     }
 
     public function generateLines(Collection $timeEntries)
