@@ -8,8 +8,6 @@ abstract class Request
 
     protected string $endpoint;
 
-    protected array $queryParams;
-
     public function getMethod(): string
     {
         return $this->method;
@@ -22,6 +20,6 @@ abstract class Request
 
     public function getQueryParams(): array
     {
-        return $this->queryParams ?? [];
+        return [];
     }
 }
