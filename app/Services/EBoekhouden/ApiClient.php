@@ -4,6 +4,10 @@ namespace App\Services\EBoekhouden;
 
 use App\Services\EBoekhouden\Exceptions\Exception;
 use App\Services\EBoekhouden\Models\Invoice;
+use App\Services\EBoekhouden\Requests\AddInvoiceRequest;
+use App\Services\EBoekhouden\Requests\GetInvoicesRequest;
+use App\Services\EBoekhouden\Requests\GetRelationsRequest;
+use App\Services\EBoekhouden\Requests\Request;
 use Carbon\Carbon;
 use DateTimeInterface;
 use Illuminate\Support\Arr;
@@ -18,6 +22,7 @@ class ApiClient
         protected string $username,
         protected string $securityCode1,
         protected string $securityCode2,
+        // TODO implement
         protected ErrorHandler $errorHandler,
     ) {
         //
@@ -54,6 +59,21 @@ class ApiClient
         unset($this->sessionId);
     }
 
+    protected function doRequest(Request $request)
+    {
+        $response = $this->doAuthenticatedCall(
+            $request->getMethodName(),
+            $request->toArray(),
+        );
+
+        if (!is_null($request->getResultPath())) {
+            // TODO FIXME find some less hacky way to do this
+            return Arr::get(json_decode(json_encode($response), true), $request->getResultPath());
+        }
+
+        return $response;
+    }
+
     protected function doAuthenticatedCall(string $methodName, array $input)
     {
         $this->checkSession();
@@ -70,25 +90,26 @@ class ApiClient
         return $response;
     }
 
-    protected function parseResponse(object $response)
-    {
-
-    }
-
     protected function checkError(object $response, string $root)
     {
-        if (property_exists($response, $root) && property_exists($response->$root, 'ErrorMsg')) {
+        if (
+            property_exists($response, $root) &&
+            property_exists($response->$root, 'ErrorMsg') &&
+            property_exists($response->$root->ErrorMsg, 'LastErrorDescription')
+        ) {
             $error = $response->$root->ErrorMsg;
 
-           //  throw new Exception(
-           //      $error->LastErrorCode . ' ' . $error->LastErrorDescription
-           // );
+            // TODO FIXME include request payload in exception
+            throw new Exception(
+                $error->LastErrorDescription,
+                $error->LastErrorCode
+           );
         }
     }
 
     public function addInvoice(Invoice $invoice)
     {
-        return $this->doAuthenticatedCall('AddFactuur', $invoice->toArray());
+        return $this->doRequest(new AddInvoiceRequest($invoice));
     }
 
     public function getInvoices(
@@ -97,31 +118,14 @@ class ApiClient
         DateTimeInterface $from = null,
         DateTimeInterface $to = null,
     ) {
-        if ($from === null) {
-            $from = Carbon::parse('2020-01-01');
-        }
-
-        if ($to === null) {
-            $to = Carbon::today();
-        }
-
-        return $this->doAuthenticatedCall(
-            'GetFacturen',
-            [
-                'cFilter' => [
-                    'Factuurnummer' => $invoiceNumber,
-                    'Relatiecode' => $relationCode,
-                    'DatumVan' => $from->format('Y-m-d'),
-                    'DatumTm' => $to->format('Y-m-d'),
-                ],
-            ],
-        );
+        return $this->doRequest(new GetInvoicesRequest($invoiceNumber, $relationCode, $from, $to));
     }
 
+    // TODO FIXME this is way too specific
     public function getNextInvoiceNumber(): string
     {
         $result = $this->getInvoices();
-        $lastInvoiceNumber = Collection::make($result->GetFacturenResult->Facturen->cFactuurList)
+        $lastInvoiceNumber = Collection::make($result)
             ->pluck('Factuurnummer')
             ->sort()
             ->last();
@@ -131,12 +135,11 @@ class ApiClient
 
         $now = Carbon::now();
 
-        // TODO make configurable?
         return sprintf(
             '%04d%02d%04d',
             $now->year,
             $now->month,
-            $number +1
+            $number + 1
         );
     }
 
@@ -145,15 +148,6 @@ class ApiClient
         string $code = null,
         int $id = 0
     ) {
-        return $this->doAuthenticatedCall(
-            'GetRelaties',
-            [
-                'cFilter' => [
-                    'Trefwoord' => $keyword,
-                    'Code' => $code,
-                    'ID' => $id,
-                ],
-            ],
-        );
+        return $this->doRequest(new GetRelationsRequest($keyword, $code, $id));
     }
 }
