@@ -2,6 +2,7 @@
 
 namespace App\Services\ToggleTrack;
 
+use App\Services\ToggleTrack\Requests\GetClientsRequest;
 use App\Services\ToggleTrack\Requests\ReportRequest;
 use App\Services\ToggleTrack\Requests\Request;
 
@@ -17,7 +18,7 @@ class ApiClient
 
     public function getReport(ReportRequest $request)
     {
-        return $this->request($request);
+        return $this->doRequest($request);
     }
 
     protected function getDefaultQueryParams(): array
@@ -28,12 +29,17 @@ class ApiClient
         ];
     }
 
-    public function request(Request $request)
+    public function doRequest(Request $request)
     {
         $response = $this->httpClient->request($request->getMethod(), $request->getEndpoint(), [
             'query' => array_merge($this->getDefaultQueryParams(), $request->getQueryParams()),
         ]);
 
         return json_decode($response->getBody()->getContents());
+    }
+
+    public function getClients()
+    {
+        return $this->doRequest(new GetClientsRequest($this->workspaceId));
     }
 }
