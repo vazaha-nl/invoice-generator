@@ -3,6 +3,7 @@
 namespace App\Services\ToggleTrack;
 
 use App\Services\ToggleTrack\Requests\GetClientsRequest;
+use App\Services\ToggleTrack\Requests\GetProjectsRequest;
 use App\Services\ToggleTrack\Requests\ReportRequest;
 use App\Services\ToggleTrack\Requests\Request;
 
@@ -41,5 +42,10 @@ class ApiClient
     public function getClients()
     {
         return $this->doRequest(new GetClientsRequest($this->workspaceId));
+    }
+
+    public function getProjects()
+    {
+        return $this->doRequest(new GetProjectsRequest($this->workspaceId));
     }
 }

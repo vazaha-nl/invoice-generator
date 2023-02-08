@@ -2,7 +2,7 @@
 
 namespace App\Services\ToggleTrack\Requests;
 
-class GetClientsRequest extends Request
+class GetProjectsRequest extends Request
 {
     public function __construct(public int $workspaceId)
     {
@@ -11,6 +11,6 @@ class GetClientsRequest extends Request
 
     public function getEndpoint(): string
     {
-        return sprintf('/api/v9/workspaces/%d/clients', $this->workspaceId);
+        return sprintf('/api/v9/workspaces/%d/projects', $this->workspaceId);
     }
 }
