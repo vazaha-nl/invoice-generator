@@ -6,14 +6,17 @@ use App\Models\TimeEntry;
 use Carbon\Carbon;
 use Illuminate\Support\Collection;
 
+// TODO make interface and think of a name for this interface
 class TimeEntryCollection extends Collection
 {
+    /** @return \Illuminate\Support\Collection|array<array-key, \Carbon\Carbon>  */
     public function getUniqueDates(): Collection
     {
         return $this->groupBy(fn (TimeEntry $timeEntry) => $timeEntry->started_at->format('Y-m-d'))
             ->keys()
             ->unique()
             ->sort()
+            ->values()
             ->map(fn (string $date) => Carbon::parse($date));
     }
 
@@ -66,6 +69,8 @@ class TimeEntryCollection extends Collection
     {
         /** @var \App\Models\TimeEntry $timeEntry */
         $timeEntry = $this->first();
+
+        // TODO get/return default workspace rate as fallback
         return $timeEntry->project->rate;
     }
 }

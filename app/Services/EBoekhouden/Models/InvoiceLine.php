@@ -16,22 +16,23 @@ class InvoiceLine extends Model
     public VatCode $vatCode;
     public string $contraAccountCode;
 
-    public static function fromTimeEntryCollection(TimeEntryCollection $timeEntries)
+    // TODO make more generic with interface
+    public static function fromTimeEntryCollection(TimeEntryCollection $timeEntries): static
     {
         $invoiceLine = new static();
         $invoiceLine->amount = $timeEntries->getRoundedDurationInHours();
-        $invoiceLine->unit = Unit::HOUR;
+        $invoiceLine->unit = Unit::HOUR; // TODO refactor so that this can be multi language
         $invoiceLine->description = $timeEntries->getDescription();
-        $invoiceLine->pricePerUnit = $timeEntries->getRate() ?? 90.00; // TODO FIXME get default rate from toggl?
-        $invoiceLine->vatCode = VatCode::HIGH_SALE_21;
-        $invoiceLine->contraAccountCode = '8000'; // TODO make variable
+        $invoiceLine->pricePerUnit = $timeEntries->getRate() ?? 90.00; // TODO no fallback here, must come from upstream
+        $invoiceLine->vatCode = VatCode::HIGH_SALE_21; // TODO get from timeEntries? refactor!
+        $invoiceLine->contraAccountCode = '8000'; // TODO make variable / in config?
 
         return $invoiceLine;
     }
 
-    public function toArray(): object
+    public function toArray(): array
     {
-        return (object)[
+        return [
             'Aantal' => $this->amount,
             'Eenheid' => $this->unit->value,
             'Code' => $this->code,
