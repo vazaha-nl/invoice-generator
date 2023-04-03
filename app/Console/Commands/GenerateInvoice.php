@@ -36,29 +36,31 @@ class GenerateInvoice extends Command
      */
     public function handle(ApiClient $bookingClient, ToggleTrackApiClient $timeClient)
     {
-        $invoice = new Invoice();
-
-        $relations = $bookingClient->getRelations();
-        $relationCodes = Collection::make($relations)->pluck('Code')->toArray();
-        $relationCode = $this->choice('Select the booking relation you want to generate an invoice for:', $relationCodes);
-
         $clients = $timeClient->getClients()->getModels();
         $clientNames = $clients->map(fn (Client $client) => $client->getName())->toArray();
 
-        $clientName = $this->choice('Select the corresponding client from your time tracker:', $clientNames);
+        $clientName = $this->choice('Select the client from your time tracker:', $clientNames);
 
         /** @var Client $client */
         $client = $clients->first(fn (Client $client) => $client->getName() === $clientName);
 
         $clientModel = $client->toEloquentModel();
 
-        if ($clientModel->e_boekhouden_relation_code !== null && $clientModel->e_boekhouden_relation_code !== $relationCode) {
-            dd('time client is different from booking relation code, check your db, TODO FIX with better error');
-        }
-
         if ($clientModel->e_boekhouden_relation_code === null) {
-            if ($this->confirm(sprintf('Is the time tracking client "%s" the same as the booking relation "%s"?', $clientName, $relationCode), true)) {
-                $clientModel->update(['e_boekhouden_relation_code' => $relationCode]);
+
+            $relations = $bookingClient->getRelations();
+            $relationCodes = Collection::make($relations)->pluck('Code')->toArray();
+            $relationCode = $this->choice('Select the corresponding booking relation you want to generate an invoice for:', $relationCodes);
+
+
+            if ($clientModel->e_boekhouden_relation_code !== null && $clientModel->e_boekhouden_relation_code !== $relationCode) {
+                dd('time client is different from booking relation code, check your db, TODO FIX with better error');
+            }
+
+            if ($clientModel->e_boekhouden_relation_code === null) {
+                if ($this->confirm(sprintf('Is the time tracking client "%s" the same as the booking relation "%s"?', $clientName, $relationCode), true)) {
+                    $clientModel->update(['e_boekhouden_relation_code' => $relationCode]);
+                }
             }
         }
 
@@ -68,12 +70,7 @@ class GenerateInvoice extends Command
         $defaultUntil = Carbon::parse('last day of previous month')->format('Y-m-d');
         $until = $this->ask('Enter the end date of the invoice period (inclusive!):', $defaultUntil);
 
-        $invoice = (new Invoice())
-            ->setRelationCode($relationCode);
-
         $timeEntries = $this->getTimeEntries($timeClient, $client, $since, $until);
-
-        // dd($timeEntries->map(fn($i) => $i->getAttributes() ));
 
         $this->info('Generating invoice ...');
 
@@ -85,7 +82,9 @@ class GenerateInvoice extends Command
 
         $response = $bookingClient->addInvoice($invoice);
 
-        dump($invoice->toArray());
+        // dump($invoice->toArray());
+
+        $this->info('Done, invoice created with number ' . $invoiceNumber);
 
         return 0;
     }
