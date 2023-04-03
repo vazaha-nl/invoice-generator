@@ -1,7 +1,36 @@
 ## Invoice generator
 
-For my business I need to send out invoices and those are mostly based on my time registration data. That turned out to be quite time intensive. The first few times I did it by hand using a spreadsheet, but that got old real fast so I took some time to automate it. After a while I thought it might be fun to open source this.
+### Introduction
 
-This Laravel based app retrieves all data from my time tracking app [Toggl Track](https://toggl.com/track/) using their [REST api](https://developers.track.toggl.com/) and compiles it into the correct form to create an invoice for [e-boekhouden](https://www.e-boekhouden.nl/) using their [SOAP webservice](https://www.e-boekhouden.nl/koppelingen/api). It creates invoice lines based on time entries grouped by project name, will round the time to quarters and create descriptions including a list of dates.
+For my business I need to send out invoices that are mostly based on my time registration data. The first few times I did it by hand using an xls export, but that got old real fast, so, being a developer, I took some time to automate it. After a while I thought it might be fun to open source this. Because why not?
 
-**Warning**: This is not even alpha software. The core is functional for me (it already saves me a lot of work each month) but it's not ready in any sense. If you're using Toggl Track for time tracking and e-boekhouden for book keeping, and you have a similar work flow as I have, and you feel brave, this software might be useful to you. But some assembly is required. Many features and even basic glue between components are missing. There's no stable API, no documentation, not even a proper frontend yet. Use at your own risk. 
+### What it does
+
+This Laravel based app retrieves all data from my time tracking app [Toggl Track](https://toggl.com/track/) using their [REST api](https://developers.track.toggl.com/) and compiles it into the correct form to create an invoice for [e-boekhouden](https://www.e-boekhouden.nl/) using their [SOAP webservice](https://www.e-boekhouden.nl/koppelingen/api). 
+
+It creates invoice lines based on time entries grouped by project name. The time will be rounded to nearest quarters. The line description will include the project name and a list of dates, intelligently generated.
+
+### Audience
+
+This app is of very limited use to others. It works for me but it is by no means finished nor stable. The implementation is very specific. And there is only a very crude CLI interface. And no documentation except this readme. 
+
+But if you're using Toggl Track for time tracking and e-boekhouden for book keeping, and you have a very similar work flow and invoices as I have, and you're feeling brave, this just might be useful to you. 
+
+### Requirements
+
+- PHP8.1+
+- a relational database like mysql
+- a "Toggl Track" account
+- an "e-boekhouden" account
+
+### Installation
+
+- Clone the repo
+- `composer install`
+- Copy  `.env.example` to `.env` 
+- `php artisan key:generate`
+- Adjust `.env` settings, in particular the `DB_*`, `TOGGL_TRACK_*` and `E_BOEKHOUDEN_*` keys
+
+### Usage
+
+Run `php artisan invoice:generate` and follow the prompts. 
