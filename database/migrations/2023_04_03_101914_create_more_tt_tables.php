@@ -59,16 +59,22 @@ return new class extends Migration
     {
         Schema::table('time_entries', function (Blueprint $table) {
             $table->dropForeign(['project_id']);
-            $table->dropForeign(['client_id']);
             $table->dropColumn('project_id');
-            $table->dropColumn('client_id');
             $table->string('projectName')
                 ->after('description');
             $table->string('clientName')
                 ->after('description');
+
+            $table->timestamp('ended_at')->nullable();
+            $table->dropColumn('stopped_at');
+
+            $table->dropColumn('toggl_id');
+            $table->unsignedBigInteger('external_id')
+                ->unique()
+                ->nullable()
+                ->after('description');
         });
 
-        Schema::dropIfExists('clients');
         Schema::dropIfExists('projects');
     }
 };
