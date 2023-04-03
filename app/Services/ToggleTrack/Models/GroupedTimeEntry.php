@@ -105,7 +105,7 @@ class GroupedTimeEntry extends Model implements HasEloquentModel
             );
 
         if ($this->getProjectId() !== null) {
-            $eloquentProject = EloquentProject::find($this->getProjectId());
+            $eloquentProject = EloquentProject::query()->where('toggl_id', $this->getProjectId())->first();
 
             if ($eloquentProject === null) {
                 $eloquentProject = $this->getProject()->toEloquentModel();
@@ -116,7 +116,6 @@ class GroupedTimeEntry extends Model implements HasEloquentModel
         }
 
         return $eloquentTimeEntry;
-
     }
 
 }

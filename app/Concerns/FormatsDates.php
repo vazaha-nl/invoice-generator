@@ -1,6 +1,6 @@
 <?php
 
-namespace App\Services\ToggleTrack\Concerns;
+namespace App\Concerns;
 
 use Carbon\CarbonImmutable;
 use Carbon\Exceptions\InvalidFormatException;

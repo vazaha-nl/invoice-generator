@@ -3,12 +3,15 @@
 namespace App\Services\EBoekhouden\Models;
 
 use App\Collections\TimeEntryCollection;
+use App\Concerns\FormatsDates;
 use App\Models\TimeEntry;
 use Carbon\Carbon;
 use Illuminate\Support\Collection;
 
 class Invoice extends Model
 {
+    use FormatsDates;
+
     public string $number;
 
     public string $relationCode;
@@ -41,7 +44,7 @@ class Invoice extends Model
         return $this;
     }
 
-    public function generateLines(Collection $timeEntries)
+    public function generateLines(Collection $timeEntries): self
     {
         $this->lines = $timeEntries
             ->groupBy(
@@ -53,6 +56,8 @@ class Invoice extends Model
             })
             ->sortBy('description')
             ->values();
+
+        return $this;
     }
 
     public function toArray(): array
