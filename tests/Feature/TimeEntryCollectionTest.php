@@ -19,36 +19,36 @@ class TimeEntryCollectionTest extends TestCase
     {
         parent::setUp();
         TimeEntry::query()->create([
-            'projectName' => 'Project 1',
-            'clientName' => 'Client 1',
+            // 'projectName' => 'Project 1',
+            // 'clientName' => 'Client 1',
             'description' => 'description',
             // duration 77 mins
-            'start' => '2022-01-01 08:00:00',
-            'end' => '2022-01-01 09:17:00',
+            'started_at' => '2022-01-01 08:00:00',
+            'stopped_at' => '2022-01-01 09:17:00',
         ]);
         TimeEntry::create([
-            'projectName' => 'Project 1',
-            'clientName' => 'Client 1',
+            // 'projectName' => 'Project 1',
+            // 'clientName' => 'Client 1',
             'description' => 'description',
             // duration 2h 42 = 162 mins
-            'start' => '2022-01-01 13:02:00',
-            'end' => '2022-01-01 15:44:00',
+            'started_at' => '2022-01-01 13:02:00',
+            'stopped_at' => '2022-01-01 15:44:00',
         ]);
         TimeEntry::create([
-            'projectName' => 'Project 1',
-            'clientName' => 'Client 1',
+            // 'projectName' => 'Project 1',
+            // 'clientName' => 'Client 1',
             'description' => 'description',
             // duration 2h 42 = 162 mins
-            'start' => '2022-01-02 13:02:00',
-            'end' => '2022-01-02 15:44:00',
+            'started_at' => '2022-01-02 13:02:00',
+            'stopped_at' => '2022-01-02 15:44:00',
         ]);
         TimeEntry::create([
-            'projectName' => 'Project 1',
-            'clientName' => 'Client 1',
+            // 'projectName' => 'Project 1',
+            // 'clientName' => 'Client 1',
             'description' => 'description',
             // duration 77 mins
-            'start' => '2022-01-05 08:00:00',
-            'end' => '2022-01-05 09:17:00',
+            'started_at' => '2022-01-05 08:00:00',
+            'stopped_at' => '2022-01-05 09:17:00',
         ]);
 
         $this->collection = TimeEntryCollection::make(TimeEntry::all());
