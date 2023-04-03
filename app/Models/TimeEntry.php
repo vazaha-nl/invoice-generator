@@ -16,7 +16,7 @@ use Illuminate\Database\Eloquent\Relations\HasOneThrough;
  * @property int|null $toggl_id
  * @property int|null $project_id
  * @property \Illuminate\Support\Carbon|null $started_at
- * @property string|null $stopped_at
+ * @property \Illuminate\Support\Carbon|null $stopped_at
  * @property \Illuminate\Support\Carbon|null $created_at
  * @property \Illuminate\Support\Carbon|null $updated_at
  * @property-read \App\Models\Client|null $client
@@ -40,9 +40,9 @@ class TimeEntry extends Model
 
     public $guarded = [];
 
-    protected $dates = [
-        'started_at',
-        'ended_at',
+    protected $casts = [
+        'started_at' => 'datetime',
+        'stopped_at' => 'datetime',
     ];
 
     public function project(): BelongsTo
@@ -58,7 +58,7 @@ class TimeEntry extends Model
     public function getDurationInSeconds(): int
     {
         $start = $this->started_at;
-        $end = $this->ended_at ?? Carbon::now();
+        $end = $this->stopped_at ?? Carbon::now();
 
         return $start->diffInSeconds($end, true);
     }

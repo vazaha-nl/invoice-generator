@@ -59,6 +59,13 @@ class TimeEntryCollection extends Collection
 
     public function getDescription(): string
     {
-        return sprintf('%s (%s)', $this->first()->projectName, $this->getDateString());
+        return sprintf('%s (%s)', $this->first()->project->name, $this->getDateString());
+    }
+
+    public function getRate(): ?float
+    {
+        /** @var \App\Models\TimeEntry $timeEntry */
+        $timeEntry = $this->first();
+        return $timeEntry->project->rate;
     }
 }

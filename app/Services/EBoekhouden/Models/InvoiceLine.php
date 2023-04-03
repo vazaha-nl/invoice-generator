@@ -22,7 +22,7 @@ class InvoiceLine extends Model
         $invoiceLine->amount = $timeEntries->getRoundedDurationInHours();
         $invoiceLine->unit = Unit::HOUR;
         $invoiceLine->description = $timeEntries->getDescription();
-        $invoiceLine->pricePerUnit = 90.00; // TODO should be variable? from db?
+        $invoiceLine->pricePerUnit = $timeEntries->getRate() ?? 90.00; // TODO FIXME get default rate from toggl?
         $invoiceLine->vatCode = VatCode::HIGH_SALE_21;
         $invoiceLine->contraAccountCode = '8000'; // TODO make variable
 

@@ -3,6 +3,7 @@
 namespace App\Services\EBoekhouden\Models;
 
 use App\Collections\TimeEntryCollection;
+use App\Models\TimeEntry;
 use Carbon\Carbon;
 use Illuminate\Support\Collection;
 
@@ -42,7 +43,10 @@ class Invoice extends Model
 
     public function generateLines(Collection $timeEntries)
     {
-        $this->lines = $timeEntries->groupBy('projectName')
+        $this->lines = $timeEntries
+            ->groupBy(
+                fn (TimeEntry $timeEntry) => $timeEntry->project->name
+            )
             ->mapInto(TimeEntryCollection::class)
             ->map(function (TimeEntryCollection $timeEntries) {
                 return InvoiceLine::fromTimeEntryCollection($timeEntries);
@@ -54,23 +58,21 @@ class Invoice extends Model
     public function toArray(): array
     {
         return [
-            'oFact' => [
-                'Factuurnummer' => $this->number,
-                'Relatiecode' => $this->relationCode,
-                'Datum' => $this->formatDate($this->date),
-                'Factuursjabloon' => $this->template,
-                'Betalingstermijn' => $this->paymentTerm,
-                'PerEmailVerzenden' => false,
-                'AutomatischeIncasso' => false,
-                'IncassoMachtigingDatumOndertekening' => $this->formatDate(Carbon::today()),
-                'IncassoMachtigingFirst' => false,
-                'InBoekhoudingPlaatsen' => false,
-                'Regels' => [
-                    'cFactuurRegel' => $this->lines->map(function (InvoiceLine $invoiceLine) {
-                        return $invoiceLine->toArray();
-                    })->toArray(),
-                ]
-            ],
+            'Factuurnummer' => $this->number,
+            'Relatiecode' => $this->relationCode,
+            'Datum' => $this->formatDate($this->date),
+            'Factuursjabloon' => $this->template,
+            'Betalingstermijn' => $this->paymentTerm,
+            'PerEmailVerzenden' => false,
+            'AutomatischeIncasso' => false,
+            'IncassoMachtigingDatumOndertekening' => $this->formatDate(Carbon::today()),
+            'IncassoMachtigingFirst' => false,
+            'InBoekhoudingPlaatsen' => false,
+            'Regels' => [
+                'cFactuurRegel' => $this->lines->map(function (InvoiceLine $invoiceLine) {
+                    return $invoiceLine->toArray();
+                })->toArray(),
+            ]
         ];
     }
 }

@@ -18,7 +18,7 @@ class AddInvoiceRequest extends Request
         ];
     }
 
-    public function getResultPath(): null
+    public function getResultPath(): ?string
     {
         // TODO CHECK what is the return value/format for this call? it is not documented.
         return null;
