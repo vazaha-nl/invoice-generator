@@ -18,18 +18,17 @@ class Invoice extends Model
 
     public Carbon $date;
 
-    // TODO from config
-    public int $paymentTerm = 14;
+    public int $paymentTerm;
 
-    // TODO from config
-    // not possible to get invoice templates from api
-    public string $template = 'Vazaha factuur Nederlands';
+    public string $template;
 
     public Collection $lines;
 
     public function __construct()
     {
         $this->date = Carbon::today();
+        $this->template = config('e_boekhouden.invoice_template');
+        $this->paymentTerm = config('e_boekhouden.invoice_payment_term');
     }
 
     public function setNumber(string $number): self
