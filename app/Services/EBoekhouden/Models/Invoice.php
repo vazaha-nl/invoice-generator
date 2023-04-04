@@ -18,9 +18,11 @@ class Invoice extends Model
 
     public Carbon $date;
 
+    // TODO from config
     public int $paymentTerm = 14;
 
-    // TODO in config
+    // TODO from config
+    // not possible to get invoice templates from api
     public string $template = 'Vazaha factuur Nederlands';
 
     public Collection $lines;

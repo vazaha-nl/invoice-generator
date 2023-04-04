@@ -83,9 +83,11 @@ class ApiClient
             'SecurityCode2' => $this->securityCode2,
         ]);
 
-        $response = $this->soapClient->__soapCall($methodName, ['input' => $input]);
+        // TODO encapsulate in response class like TT api
+        // and do error checking and conversion to models there
+        $response = $this->soapClient->$methodName($input);
 
-        $this->checkError($response, $methodName . 'Result', );
+        $this->checkError($response, $methodName . 'Result');
 
         return $response;
     }
@@ -122,6 +124,7 @@ class ApiClient
     }
 
     // TODO FIXME this is way too specific
+    // but I don't like the way EB generates numbers
     public function getNextInvoiceNumber(): string
     {
         $result = $this->getInvoices();
