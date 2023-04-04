@@ -32,49 +32,6 @@ class GenerateInvoice extends Command
 
     protected TimeTrackingApiClient $timeTrackingApiClient;
 
-    protected function selectTimeTrackingClient(): Client
-    {
-        $clients = $this->timeTrackingApiClient->getClients()->getModels();
-        $clientNames = $clients->map(fn (Client $client) => $client->getName())->toArray();
-        $clientName = $this->choice('Select the client from your time tracker:', $clientNames);
-
-        return $clients->first(fn (Client $client) => $client->getName() === $clientName);
-    }
-
-    protected function matchTimeTrackingClientWithBookingRelation(Client $client): EloquentClient
-    {
-        $eloquentClient = $client->toEloquentModel();
-
-        if ($eloquentClient->e_boekhouden_relation_code !== null) {
-            $alreadyMatched = $this->confirm(
-                sprintf('Does time tracking client "%s" match with booking relation "%s"?', $client->getName(), $eloquentClient->e_boekhouden_relation_code),
-                true
-            );
-
-            if ($alreadyMatched) {
-                return $eloquentClient;
-            }
-        }
-
-        $relations = $this->bookingApiClient->getRelations();
-        $relationCodes = Collection::make($relations)->pluck('Code')->toArray();
-        $relationCode = $this->choice('Select the corresponding booking relation you want to generate an invoice for:', $relationCodes);
-
-        $matchConfirmed = $this->confirm(
-            sprintf('Is the time tracking client "%s" the same as the booking relation "%s"?', $eloquentClient->getName(), $relationCode),
-            true
-        );
-
-        if ($matchConfirmed) {
-            $eloquentClient->update(['e_boekhouden_relation_code' => $relationCode]);
-
-            return $eloquentClient;
-        }
-
-        // try again
-        return $this->matchTimeTrackingClientWithBookingRelation($client);
-    }
-
     /**
      * Execute the console command.
      *
@@ -109,6 +66,49 @@ class GenerateInvoice extends Command
         $this->info('Done, invoice created with number ' . $invoiceNumber);
 
         return 0;
+    }
+
+    protected function selectTimeTrackingClient(): Client
+    {
+        $clients = $this->timeTrackingApiClient->getClients()->getModels();
+        $clientNames = $clients->map(fn (Client $client) => $client->getName())->toArray();
+        $clientName = $this->choice('Select the client from your time tracker:', $clientNames);
+
+        return $clients->first(fn (Client $client) => $client->getName() === $clientName);
+    }
+
+    protected function matchTimeTrackingClientWithBookingRelation(Client $client): EloquentClient
+    {
+        $eloquentClient = $client->toEloquentModel();
+
+        if ($eloquentClient->e_boekhouden_relation_code !== null) {
+            $alreadyMatched = $this->confirm(
+                sprintf('Does time tracking client "%s" match with booking relation "%s"?', $client->getName(), $eloquentClient->e_boekhouden_relation_code),
+                true
+            );
+
+            if ($alreadyMatched) {
+                return $eloquentClient;
+            }
+        }
+
+        $relations = $this->bookingApiClient->getRelations();
+        $relationCodes = Collection::make($relations)->pluck('Code')->toArray();
+        $relationCode = $this->choice(sprintf('Select the booking relation corresponding with time tracking client "%s":', $client->getName()), $relationCodes);
+
+        $matchConfirmed = $this->confirm(
+            sprintf('Is the time tracking client "%s" the same as the booking relation "%s"?', $eloquentClient->getName(), $relationCode),
+            true
+        );
+
+        if ($matchConfirmed) {
+            $eloquentClient->update(['e_boekhouden_relation_code' => $relationCode]);
+
+            return $eloquentClient;
+        }
+
+        // try again
+        return $this->matchTimeTrackingClientWithBookingRelation($client);
     }
 
     protected function getTimeEntries(Client $client, $since, $until): Collection
