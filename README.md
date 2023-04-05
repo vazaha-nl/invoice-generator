@@ -12,16 +12,16 @@ It creates invoice lines based on time entries grouped by project name. The time
 
 ### Audience
 
-This app is of very limited use to others. It works for me but it is by no means finished nor stable. The implementation is very specific. And there is only a very crude CLI interface. And no documentation except this readme. 
+This app is of very limited use to others. It works for me but it is by no means finished or stable. The implementation is very specific. There is only a very simple CLI interface. And no documentation except this readme.
 
-But if you're using Toggl Track for time tracking and e-boekhouden for book keeping, and you have a very similar work flow and invoices as I have, and you're feeling brave, this just might be useful to you. 
+But if you're using Toggl Track for time tracking and e-boekhouden for book keeping, and you have a very similar workflow and invoice format as I have, this just might be useful to you. 
 
 ### Requirements
 
 - PHP8.1+
-- a relational database like mysql
-- a "Toggl Track" account
-- an "e-boekhouden" account
+- a relational database (tested with MySQL)
+- a [Toggl Track](https://toggl.com/track/) account and API credentials
+- an [e-boekhouden](https://www.e-boekhouden.nl/) account and API credentials
 
 ### Installation
 
@@ -34,3 +34,7 @@ But if you're using Toggl Track for time tracking and e-boekhouden for book keep
 ### Usage
 
 Run `php artisan invoice:generate` and follow the prompts. 
+
+### License
+
+This software is open-sourced software licensed under the [MIT license](https://opensource.org/licenses/MIT).
