@@ -8,6 +8,7 @@ use App\Services\EBoekhouden\Requests\AddInvoiceRequest;
 use App\Services\EBoekhouden\Requests\GetInvoicesRequest;
 use App\Services\EBoekhouden\Requests\GetRelationsRequest;
 use App\Services\EBoekhouden\Requests\Request;
+use App\Services\EBoekhouden\Responses\Response;
 use Carbon\Carbon;
 use DateTimeInterface;
 use Illuminate\Support\Arr;
@@ -59,19 +60,21 @@ class ApiClient
         unset($this->sessionId);
     }
 
-    protected function doRequest(Request $request)
+    protected function doRequest(Request $request): Response
     {
-        $response = $this->doAuthenticatedCall(
+        $responseData = $this->doAuthenticatedCall(
             $request->getMethodName(),
             $request->toArray(),
         );
 
-        if (!is_null($request->getResultPath())) {
-            // TODO FIXME find some less hacky way to do this
-            return Arr::get(json_decode(json_encode($response), true), $request->getResultPath());
-        }
+        return new Response($request, $responseData);
 
-        return $response;
+        // if (!is_null($request->getResultPath())) {
+        //     // TODO FIXME find some less hacky way to do this
+        //     return Arr::get(json_decode(json_encode($responseData), true), $request->getResultPath());
+        // }
+
+        // return $responseData;
     }
 
     protected function doAuthenticatedCall(string $methodName, array $input)
@@ -83,13 +86,11 @@ class ApiClient
             'SecurityCode2' => $this->securityCode2,
         ]);
 
-        // TODO encapsulate in response class like TT api
-        // and do error checking and conversion to models there
-        $response = $this->soapClient->$methodName($input);
+        return $this->soapClient->$methodName($input);
 
-        $this->checkError($response, $methodName . 'Result');
+        // $this->checkError($response, $methodName . 'Result');
 
-        return $response;
+        // return $response;
     }
 
     protected function checkError(object $response, string $root)

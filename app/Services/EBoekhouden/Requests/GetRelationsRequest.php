@@ -2,8 +2,12 @@
 
 namespace App\Services\EBoekhouden\Requests;
 
+use App\Services\EBoekhouden\Models\Relation;
+
 class GetRelationsRequest extends Request
 {
+    protected string $model = Relation::class;
+
     public function __construct(
         public ?string $keyword = null,
         public ?string $code = null,
