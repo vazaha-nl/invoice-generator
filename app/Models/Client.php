@@ -38,4 +38,9 @@ class Client extends Model
     {
         return $this->hasMany(Project::class);
     }
+
+    public function getName(): string
+    {
+        return $this->name;
+    }
 }
