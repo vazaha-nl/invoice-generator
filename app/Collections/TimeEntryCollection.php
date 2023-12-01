@@ -75,8 +75,11 @@ class TimeEntryCollection extends Collection
     {
         return sprintf(
             '%s (%s)',
-            $this->first()->project->name,
-            $this->getDateString()
+            $this->map(fn (TimeEntry $timeEntry) => $timeEntry->getDescription())
+                ->unique()
+                // TODO test how this works out
+                ->join(PHP_EOL),
+            $this->getDateString(),
         );
     }
 
