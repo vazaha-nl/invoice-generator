@@ -11,6 +11,7 @@ use Illuminate\Database\Eloquent\Relations\HasMany;
  *
  * @property int $id
  * @property string $name
+ * @property float|null $rate
  * @property int|null $toggl_id
  * @property string|null $e_boekhouden_relation_code
  * @property \Illuminate\Support\Carbon|null $created_at
@@ -24,6 +25,7 @@ use Illuminate\Database\Eloquent\Relations\HasMany;
  * @method static \Illuminate\Database\Eloquent\Builder|Client whereEBoekhoudenRelationCode($value)
  * @method static \Illuminate\Database\Eloquent\Builder|Client whereId($value)
  * @method static \Illuminate\Database\Eloquent\Builder|Client whereName($value)
+ * @method static \Illuminate\Database\Eloquent\Builder|Client whereRate($value)
  * @method static \Illuminate\Database\Eloquent\Builder|Client whereTogglId($value)
  * @method static \Illuminate\Database\Eloquent\Builder|Client whereUpdatedAt($value)
  * @mixin \Eloquent

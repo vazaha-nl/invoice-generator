@@ -49,7 +49,7 @@ class Invoice extends Model
     {
         $this->lines = $timeEntries
             ->groupBy(
-                fn (TimeEntry $timeEntry) => $timeEntry->project->name
+                fn (TimeEntry $timeEntry) => $timeEntry->getDescription()
             )
             ->mapInto(TimeEntryCollection::class)
             ->map(function (TimeEntryCollection $timeEntries) {
@@ -80,5 +80,21 @@ class Invoice extends Model
                 })->toArray(),
             ]
         ];
+    }
+
+    public function toString(): string
+    {
+        $string = '';
+
+        $string .= sprintf("Factuurnummer : %s\n", $this->number);
+        $string .= sprintf("Relatiecode : %s\n", $this->relationCode);
+        $string .= sprintf("Datum : %s\n", $this->date->format('Y-m-d'));
+        $string .= "\nRegels:\n";
+
+        $string .= $this->lines
+            ->map(fn (InvoiceLine $line) => $line->toString())
+            ->join("\n");
+
+        return $string;
     }
 }

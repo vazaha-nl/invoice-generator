@@ -45,6 +45,8 @@ class GenerateInvoice extends Command
         $client = $this->selectTimeTrackingClient();
         $eloquentClient = $this->matchTimeTrackingClientWithBookingRelation($client);
 
+        $this->checkClientRate($eloquentClient);
+
         $defaultSince = Carbon::parse('first day of previous month')->format('Y-m-d');
         $since = $this->ask('Enter the start date of the invoice period:', $defaultSince);
 
@@ -61,11 +63,43 @@ class GenerateInvoice extends Command
             ->setRelationCode($eloquentClient->e_boekhouden_relation_code);
         $invoice->generateLines($timeEntries);
 
+        print $invoice->toString();
+        print "\n\n";
+
+        $proceed = $this->confirm('Does this look okay?');
+
+        if (!$proceed) {
+            $this->warn('Aborted.');
+            exit(0);
+        }
+
         $bookingApiClient->addInvoice($invoice);
 
         $this->info('Done, invoice created with number ' . $invoiceNumber);
 
         return 0;
+    }
+
+    protected function checkClientRate(EloquentClient $client)
+    {
+        if (!isset($client->rate)) {
+            if (!$this->confirm('The client rate is not set, do you want to set it? If you say no then I will try to get the rate from the time entries.')) {
+                return;
+            }
+        } else {
+            if (!$this->confirm(sprintf('The client rate is %f, do you want to edit it?', $client->rate))) {
+                return;
+            }
+        }
+
+        $rate = 0;
+
+        while (!$rate) {
+            $rate = (float)$this->ask('Enter the hourly rate excluding VAT for ' . $client->name, '90');
+        }
+
+        $client->rate = $rate;
+        $client->save();
     }
 
     protected function selectTimeTrackingClient(): Client
@@ -121,7 +155,8 @@ class GenerateInvoice extends Command
 
         while ($timeEntriesResponse->hasNextPage()) {
             $timeEntriesResponse = $timeEntriesResponse->getNextPage();
-            $timeEntries->concat($timeEntriesResponse->getModels());
+            $models = $timeEntriesResponse->getModels();
+            $timeEntries = $timeEntries->concat($models);
         }
 
         $this->info('Committing to db ...');

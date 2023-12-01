@@ -52,7 +52,7 @@ class TimeEntry extends Model
 
     public function client(): HasOneThrough
     {
-        return $this->hasOneThrough(Client::class, Project::class);
+        return $this->hasOneThrough(Client::class, Project::class, 'client_id', 'id');
     }
 
     public function getDurationInSeconds(): int
@@ -61,5 +61,22 @@ class TimeEntry extends Model
         $end = $this->stopped_at ?? Carbon::now();
 
         return $start->diffInSeconds($end, true);
+    }
+
+    // TODO make configurable per client or something
+    public function getDescription(): string
+    {
+        // return sprintf(
+        //     '%s (%s)',
+        //     $this->first()->project->name,
+        //     $this->getDateString()
+        // );
+
+        return sprintf(
+            '%s: %s',
+            $this->project->name,
+            $this->description,
+            // $this->getDateString()
+        );
     }
 }

@@ -86,6 +86,6 @@ class TimeEntryCollection extends Collection
         $timeEntry = $this->first();
 
         // TODO get/return default rate as fallback
-        return $timeEntry->project->rate;
+        return $timeEntry->client->rate ?? $timeEntry->project->rate ?? null;
     }
 }

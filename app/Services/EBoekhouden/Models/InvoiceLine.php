@@ -44,4 +44,16 @@ class InvoiceLine extends Model
             'KostenplaatsID' => 0,
         ];
     }
+
+    public function toString(): string
+    {
+        return sprintf(
+            '%.2f %s %s @ %.2f : %.2f',
+            $this->amount,
+            $this->unit->value,
+            $this->description,
+            $this->pricePerUnit,
+            $this->pricePerUnit * $this->amount,
+        );
+    }
 }
