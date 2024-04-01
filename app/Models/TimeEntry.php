@@ -73,9 +73,9 @@ class TimeEntry extends Model
         // );
 
         return sprintf(
-            '%s: %s',
+            '%s',
             $this->project->name,
-            $this->description,
+            // $this->description,
             // $this->getDateString()
         );
     }
