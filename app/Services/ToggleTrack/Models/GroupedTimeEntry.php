@@ -45,8 +45,6 @@ class GroupedTimeEntry extends Model implements HasEloquentModel
 
     public function getProject(): ?Project
     {
-        // TODO refactor, make more efficient so it does not give rate limit errors
-        sleep(1);
         $projectId = $this->getProjectId();
 
         if ($projectId === null) {
@@ -107,12 +105,11 @@ class GroupedTimeEntry extends Model implements HasEloquentModel
             );
 
         if ($this->getProjectId() !== null) {
-            // $eloquentProject = EloquentProject::query()->where('toggl_id', $this->getProjectId())->first();
+            $eloquentProject = EloquentProject::query()->where('toggl_id', $this->getProjectId())->first();
 
-            // if ($eloquentProject === null) {
-            //     $eloquentProject = $this->getProject()->toEloquentModel();
-            // }
-            $eloquentProject = $this->getProject()->toEloquentModel();
+            if ($eloquentProject === null) {
+                $eloquentProject = $this->getProject()->toEloquentModel();
+            }
 
             $eloquentTimeEntry->project()->associate($eloquentProject);
             $eloquentTimeEntry->save();
