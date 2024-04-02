@@ -127,7 +127,7 @@ class ApiClient
     // but I don't like the way EB generates numbers
     public function getNextInvoiceNumber(): string
     {
-        $result = $this->getInvoices();
+        $result = $this->getInvoices(from: Carbon::now()->subMonths(2));
         $lastInvoiceNumber = Collection::make($result)
             ->pluck('Factuurnummer')
             ->sort()
