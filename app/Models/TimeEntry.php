@@ -2,6 +2,7 @@
 
 namespace App\Models;
 
+use App\TimeEntryRenderers\TimeEntryRenderer;
 use Carbon\Carbon;
 use Illuminate\Database\Eloquent\Factories\HasFactory;
 use Illuminate\Database\Eloquent\Model;
@@ -66,17 +67,25 @@ class TimeEntry extends Model
     // TODO make configurable per client or something
     public function getDescription(): string
     {
+        $renderer = $this->project->client->getTimeEntryRenderer();
         // return sprintf(
         //     '%s (%s)',
         //     $this->first()->project->name,
         //     $this->getDateString()
         // );
 
+        return $renderer->render($this);
+
         return sprintf(
             '%s',
-            $this->project->name,
-            // $this->description,
+            // $this->project->name,
+            $this->description,
             // $this->getDateString()
         );
+    }
+
+    public function render(TimeEntryRenderer $renderer): string
+    {
+        return $renderer->render($this);
     }
 }
