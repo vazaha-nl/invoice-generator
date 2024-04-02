@@ -6,7 +6,7 @@ use App\Models\TimeEntry;
 
 class ByProject extends TimeEntryRenderer
 {
-    protected string $description = 'By project name';
+    protected string $description = 'Render lines by project name';
 
     public function render(TimeEntry $timeEntry): string
     {

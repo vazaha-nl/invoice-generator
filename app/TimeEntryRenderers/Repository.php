@@ -2,7 +2,6 @@
 
 namespace App\TimeEntryRenderers;
 
-use Illuminate\Support\Collection;
 use Illuminate\Support\Str;
 use ReflectionClass;
 use SplFileInfo;
@@ -33,6 +32,11 @@ class Repository
         }
 
         return $all;
+    }
+
+    public function getDefault(): TimeEntryRenderer
+    {
+        return new ByProject();
     }
 
     protected function filenameToClass(SplFileInfo $file): string

@@ -8,8 +8,11 @@ use App\Services\EBoekhouden\Models\Invoice;
 use App\Services\ToggleTrack\ApiClient as TimeTrackingApiClient;
 use App\Services\ToggleTrack\Models\Client;
 use App\Services\ToggleTrack\Models\GroupedTimeEntry;
+use App\TimeEntryRenderers\Repository;
+use App\TimeEntryRenderers\TimeEntryRenderer;
 use Carbon\Carbon;
 use Illuminate\Console\Command;
+use Illuminate\Support\Arr;
 use Illuminate\Support\Collection;
 
 class GenerateInvoice extends Command
@@ -32,20 +35,27 @@ class GenerateInvoice extends Command
 
     protected TimeTrackingApiClient $timeTrackingApiClient;
 
+    protected Repository $timeEntryRendererRepository;
+
     /**
      * Execute the console command.
      *
      * @return int
      */
-    public function handle(BookingApiClient $bookingApiClient, TimeTrackingApiClient $timeKeepingApiClient)
-    {
+    public function handle(
+        BookingApiClient $bookingApiClient,
+        TimeTrackingApiClient $timeKeepingApiClient,
+        Repository $timeEntryRendererRepository
+    ) {
         $this->bookingApiClient = $bookingApiClient;
         $this->timeTrackingApiClient = $timeKeepingApiClient;
+        $this->timeEntryRendererRepository = $timeEntryRendererRepository;
 
         $client = $this->selectTimeTrackingClient();
         $eloquentClient = $this->matchTimeTrackingClientWithBookingRelation($client);
 
         $this->checkClientRate($eloquentClient);
+        $this->checkTimeEntryRenderer($eloquentClient);
 
         $defaultSince = Carbon::parse('first day of previous month')->format('Y-m-d');
         $since = $this->ask('Enter the start date of the invoice period:', $defaultSince);
@@ -78,6 +88,26 @@ class GenerateInvoice extends Command
         $this->info('Done, invoice created with number ' . $invoiceNumber);
 
         return 0;
+    }
+
+    protected function checkTimeEntryRenderer(EloquentClient $client)
+    {
+        if (!isset($client->time_entry_renderer_class)) {
+            if (!$this->confirm('The time entry renderer is not set. Do you want to set it? If you say no, the default renderer will be used.')) {
+                return;
+            }
+        }
+
+        // TODO refactor, move logic to Repository and make nicer
+        $renderers = $this->timeEntryRendererRepository->getAll();
+        $descriptions = array_map(fn (TimeEntryRenderer $renderer) => $renderer->getDescription(), $renderers);
+        $currentRenderer = $client->getTimeEntryRenderer();
+        $currentDescription = Arr::first($renderers, fn (TimeEntryRenderer $renderer) => $renderer->getDescription() === $currentRenderer->getDescription())->getDescription();
+        $selectedDescription = $this->choice('Select the renderer you want to use', $descriptions, $currentDescription);
+
+        $selectedRenderer = Arr::first($renderers, fn (TimeEntryRenderer $renderer) => $renderer->getDescription() === $selectedDescription);
+        $client->time_entry_renderer_class = get_class($selectedRenderer);
+        $client->save();
     }
 
     protected function checkClientRate(EloquentClient $client)

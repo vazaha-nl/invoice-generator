@@ -6,6 +6,8 @@ use App\Models\TimeEntry;
 
 class Quattro extends ByDescription
 {
+    protected string $description = 'Client specific Quattro renderer';
+
     public function render(TimeEntry $timeEntry): string
     {
         $project = $timeEntry->project;

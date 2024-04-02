@@ -64,28 +64,10 @@ class TimeEntry extends Model
         return $start->diffInSeconds($end, true);
     }
 
-    // TODO make configurable per client or something
     public function getDescription(): string
     {
         $renderer = $this->project->client->getTimeEntryRenderer();
-        // return sprintf(
-        //     '%s (%s)',
-        //     $this->first()->project->name,
-        //     $this->getDateString()
-        // );
 
-        return $renderer->render($this);
-
-        return sprintf(
-            '%s',
-            // $this->project->name,
-            $this->description,
-            // $this->getDateString()
-        );
-    }
-
-    public function render(TimeEntryRenderer $renderer): string
-    {
         return $renderer->render($this);
     }
 }

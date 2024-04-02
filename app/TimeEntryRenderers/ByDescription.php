@@ -6,7 +6,7 @@ use App\Models\TimeEntry;
 
 class ByDescription extends TimeEntryRenderer
 {
-    protected string $description = 'By description';
+    protected string $description = 'Render lines by description';
 
     public function render(TimeEntry $timeEntry): string
     {
