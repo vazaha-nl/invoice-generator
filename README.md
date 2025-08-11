@@ -1,3 +1,5 @@
+## moved to [codeberg](https://codeberg.org/vazaha-nl/invoice-generator)
+
 ## Invoice generator
 
 ### Introduction
